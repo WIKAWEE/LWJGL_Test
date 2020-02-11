@@ -9,11 +9,12 @@ import java.io.IOException;
 public class LWJGL_Test {
     public static Model[] model;
     public void run() {
-            init();
-            //init model loading on first model
-            model[0] = getModel(0, "model.apw", Model.MODELW);
-            model[0].displayData(ModelW.DISP_APW);
-            loop();
+        System.out.println("GIT TEST");
+        init();
+        //init model loading on first model
+        model[0] = getModel(0, "model.apw", Model.MODELW);
+        model[0].displayData(ModelW.DISP_APW);
+        loop();
     }
     private void init() {
         model = new ModelW[1];
