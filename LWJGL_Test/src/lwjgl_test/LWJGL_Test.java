@@ -39,24 +39,9 @@ public class LWJGL_Test {
                 BufferedReader reader = new BufferedReader(new FileReader(modelTxt));
                 System.out.println("reader init successful");
                 //read points (start with check for point header)
-                String currLine = reader.readLine();
-                if(currLine.substring(0, 1).equals("P")){
-                    int pCt = Integer.parseInt(currLine.substring(2));
-                    point = new Point[pCt];
-                    for(int i = 0; i < point.length; i++){
-                        currLine = reader.readLine();
-                        String[] cordTemp = currLine.split(" ", 0);
-                        if(cordTemp.length != 3){
-                            System.out.println("Point "+i+" in model "+mod+" needs exactly 3 co-ords, it has "+cordTemp.length+". Please check model file.");
-                            System.exit(0);
-                        }
-                        for(int a = 0; a < 3; a++){
-                            point[i] = new Point(Float.parseFloat(cordTemp[0]), Float.parseFloat(cordTemp[1]), Float.parseFloat(cordTemp[2]));
-                        }
-                    }
-                }
+                point = Element.readElement(reader, Element.ELEMENT_POINT, mod);
                 //read lines (start with check for line header)
-                currLine = reader.readLine();
+                String currLine = reader.readLine();
                 if(currLine.substring(0, 1).equals("C")){
                     int cCt = Integer.parseInt(currLine.substring(2));
                     color = new Color[cCt];

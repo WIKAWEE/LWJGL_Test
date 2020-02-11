@@ -1,6 +1,6 @@
 package lwjgl_test;
 
-public class Point {
+public class Point extends Element{
     Vec cords;
     public Point(Vec vec){
         this.cords = vec;

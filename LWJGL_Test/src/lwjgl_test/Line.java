@@ -1,6 +1,6 @@
 package lwjgl_test;
 
-public class Line {
+public class Line extends Element{
     int aPointer;
     int bPointer;
     int cPointer;

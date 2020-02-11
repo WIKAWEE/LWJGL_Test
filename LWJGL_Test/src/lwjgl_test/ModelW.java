@@ -37,7 +37,8 @@ public class ModelW implements Model{
             for(Line l: line){
                 System.out.println(l.aPointer+" "+l.bPointer+" "+l.cPointer);
             }
-        }else if(displayType == DISP_EASYREAD){
+        }
+        if(displayType == DISP_EASYREAD){
             
         }
     }

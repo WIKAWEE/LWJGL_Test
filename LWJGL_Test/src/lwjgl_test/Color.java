@@ -1,6 +1,6 @@
 package lwjgl_test;
 
-public class Color {
+public class Color extends Element{
     float r;
     float g;
     float b;
