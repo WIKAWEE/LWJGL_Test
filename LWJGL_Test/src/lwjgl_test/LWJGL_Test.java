@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lwjgl_test.Exception.WrongLengthException;
 import lwjgl_test.Exception.WrongTypeException;
 
@@ -14,13 +12,13 @@ public class LWJGL_Test {
     public static Model[] model;
     public void run(){
         init();
-        //init model loading on first model
-        model[0] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[0].displayData(ModelW.DISP_APW);
         loop();
     }
     private void init() {
-        model = new ModelW[1];
+        model = new Model[1];
+        //init model loading on first model
+        model[0] = getModel(0, "pyramid.apw", Model.MODELW);
+        model[0].displayData(ModelW.DISP_APW);
     }
     private void loop() {
         //loop code here

@@ -1,12 +1,11 @@
 package lwjgl_test;
 
-public class ModelW implements Model{
+public class ModelW extends Model{
     public static final int DISP_APW = 0;
     public static final int DISP_EASYREAD = 1;
     int pointCount;
     int colorCount;
     int lineCount;
-    Point[] point;
     Color[] color;
     Line[] line;
     public ModelW(Point[] p, Color[] c, Line[] l){
@@ -19,8 +18,8 @@ public class ModelW implements Model{
     }
     
     @Override
-    public void displayData(int displayType){
-        if(displayType == DISP_APW){
+    public void displayData(int dataType){
+        if(dataType == DISP_APW){
             System.out.println();
             System.out.print("P ");
             System.out.println(this.pointCount);
@@ -38,7 +37,7 @@ public class ModelW implements Model{
                 System.out.println(l.aPointer+" "+l.bPointer+" "+l.cPointer);
             }
         }
-        if(displayType == DISP_EASYREAD){
+        if(dataType == DISP_EASYREAD){
             
         }
     }
