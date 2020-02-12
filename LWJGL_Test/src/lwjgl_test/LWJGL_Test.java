@@ -18,6 +18,7 @@ public class LWJGL_Test {
         model = new Model[1];
         //init model loading on first model
         model[0] = getModel(0, "pyramid.apw", Model.MODELW);
+        model[0].translate(new Vec(0, 0, -12));
         model[0].displayData(ModelW.DISP_APW);
     }
     private void loop() {

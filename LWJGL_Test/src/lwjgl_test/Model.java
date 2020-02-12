@@ -31,4 +31,12 @@ public abstract class Model {
         for(int i = 0; i < point.length; i++)
             point[i] = new Point(Vec.scale(point[i].cords, o, powerX, powerY, powerZ));
     }
+    public void translate(Vec v){
+        for(int i = 0; i < point.length; i++)
+            point[i] = new Point(Vec.add(point[i].cords, v));
+    }
+    public void translate(Point v){
+        for(int i = 0; i < point.length; i++)
+            point[i] = new Point(Vec.add(point[i].cords, v.cords));
+    }
 }
