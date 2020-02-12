@@ -9,7 +9,7 @@ import java.io.IOException;
 public class LWJGL_Test {
     public static Model[] model;
     public void run() {
-        System.out.println("GIT TEST");
+        System.out.println("GIT TEST AT HOME");
         init();
         //init model loading on first model
         model[0] = getModel(0, "model.apw", Model.MODELW);
