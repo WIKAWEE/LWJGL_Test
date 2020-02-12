@@ -7,14 +7,27 @@ import java.io.FileReader;
 import java.io.IOException;
 import lwjgl_test.Exception.WrongLengthException;
 import lwjgl_test.Exception.WrongTypeException;
+import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import static org.lwjgl.system.MemoryUtil.*;
 
 public class LWJGL_Test {
+    long window = glfwCreateWindow(200, 200, "GLFW WINDOW CREATION SUCCESSFUL", NULL, NULL);
     public static Model[] model;
     public void run(){
         init();
         loop();
+        glfwTerminate();
+        glfwDestroyWindow(window);
     }
     private void init() {
+        glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.out));
+        if(!glfwInit()){
+            System.out.println("Error: GLFW Initialization has failed. Exiting with error.");
+            System.exit(0);
+        }else{
+            System.out.println("GLFW init successful. Running version "+glfwGetVersionString());
+        }
         model = new Model[1];
         //init model loading on first model
         model[0] = getModel(0, "pyramid.apw", Model.MODELW);
@@ -22,7 +35,8 @@ public class LWJGL_Test {
         model[0].displayData(ModelW.DISP_APW);
     }
     private void loop() {
-        //loop code here
+        for(int i = 0; i < 200000; i++)
+            System.out.println();
     }
     public static void main(String[] args) {
             new LWJGL_Test().run();
