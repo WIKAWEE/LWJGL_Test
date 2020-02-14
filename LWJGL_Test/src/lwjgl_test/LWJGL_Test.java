@@ -9,25 +9,60 @@ import lwjgl_test.Exception.WrongLengthException;
 import lwjgl_test.Exception.WrongTypeException;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWWindowCloseCallback;
+import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class LWJGL_Test {
-    long window = glfwCreateWindow(200, 200, "GLFW WINDOW CREATION SUCCESSFUL", NULL, NULL);
+    boolean screenRunning = false;
+    int windowWidth = 1575;
+    int windowHeight = 675;
+    long window;
+    long monitor;
     public static Model[] model;
     public void run(){
         init();
         loop();
-        glfwTerminate();
         glfwDestroyWindow(window);
+        glfwTerminate();
     }
     private void init() {
-        glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.out));
+        //if (!glfwInit()){ line must be first!!!
         if(!glfwInit()){
             System.out.println("Error: GLFW Initialization has failed. Exiting with error.");
             System.exit(0);
         }else{
             System.out.println("GLFW init successful. Running version "+glfwGetVersionString());
         }
+        
+        monitor = glfwGetPrimaryMonitor();
+        if(monitor == NULL){
+            System.out.println("NO MONITOR FOUND");
+        }
+        int mWidth = (int)(glfwGetVideoMode(monitor).width()*0.82);
+        int mHeight = (int)(glfwGetVideoMode(monitor).height()*0.82);
+        if(21*mHeight/9 < mWidth){
+            windowHeight = mHeight;
+            windowWidth = mHeight*21/9;
+        }else{
+            windowWidth = mWidth;
+            windowHeight = mWidth*9/21;
+        }
+        glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.out));
+        glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        window = glfwCreateWindow(windowWidth, windowHeight, "Render test window", NULL, NULL);
+        glfwMakeContextCurrent(window);
+        glfwSetWindowCloseCallback(window, (long window) -> {
+            myWindowCallback();
+        });
+        glfwSetKeyCallback(window, (long window, int key, int scancode, int action, int mods)->{
+            if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
+                myWindowCallback();
+            }
+        });
+        screenRunning = true;
         model = new Model[1];
         //init model loading on first model
         model[0] = getModel(0, "pyramid.apw", Model.MODELW);
@@ -35,8 +70,9 @@ public class LWJGL_Test {
         model[0].displayData(ModelW.DISP_APW);
     }
     private void loop() {
-        for(int i = 0; i < 200000; i++)
-            System.out.println();
+        while(screenRunning){
+            glfwPollEvents();
+        }
     }
     public static void main(String[] args) {
             new LWJGL_Test().run();
@@ -66,5 +102,13 @@ public class LWJGL_Test {
             }
         }
         return null;
+    }
+    void recieveKey(long window, int key, int code, int action, int modifiers){
+        if(key == GLFW_KEY_A && action == GLFW_RELEASE)
+            glfwSetWindowShouldClose(window, true);
+    }
+    void myWindowCallback(){
+            screenRunning = false;
+            System.out.println("EXIT");
     }
 }
