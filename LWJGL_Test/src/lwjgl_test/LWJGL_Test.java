@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 
 public class LWJGL_Test {
     boolean screenRunning = false;
@@ -27,6 +29,22 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void init() {
+        windowInit();
+        openglInit();
+        model = new Model[1];
+        //init model loading on first model
+        model[0] = getModel(0, "pyramid.apw", Model.MODELW);
+        model[0].translate(new Vec(0, 0, -12));
+        model[0].displayData(ModelW.DISP_APW);
+    }
+    private void openglInit(){
+        if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
+            
+        }
+        glfwMakeContextCurrent(window);
+        glViewport(0, 0, windowWidth, windowHeight);
+    }
+    private void windowInit(){
         //if (!glfwInit()){ line must be first!!!
         if(!glfwInit()){
             System.out.println("Error: GLFW Initialization has failed. Exiting with error.");
@@ -52,8 +70,8 @@ public class LWJGL_Test {
         glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         window = glfwCreateWindow(windowWidth, windowHeight, "Render test window", NULL, NULL);
-        glfwMakeContextCurrent(window);
         glfwSetWindowCloseCallback(window, (long window) -> {
             myWindowCallback();
         });
@@ -63,11 +81,6 @@ public class LWJGL_Test {
             }
         });
         screenRunning = true;
-        model = new Model[1];
-        //init model loading on first model
-        model[0] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[0].translate(new Vec(0, 0, -12));
-        model[0].displayData(ModelW.DISP_APW);
     }
     private void loop() {
         while(screenRunning){
