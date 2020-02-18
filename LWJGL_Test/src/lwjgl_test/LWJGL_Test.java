@@ -38,12 +38,16 @@ public class LWJGL_Test {
         glClear(GL_COLOR_BUFFER_BIT);
         float offset = (float)time/20f-0.5f;
         glBegin(GL_TRIANGLES);
-        glColor3f(0f, 1f, 0.8f);
+        glColor3f(0f, 1f, 0.65f);
         glVertex3f(-0.5f+offset, -1f, 0f);
-        glColor3f(0f, 0f, 0f);
+        glColor3f(0f, 0.9f, 1f);
         glVertex3f(0.5f+offset, -1f, 0f);
-        glColor3f(0.19f, 0f, 0f);
+        glColor3f(0.3f, 0.7f, 1f);
         glVertex3f(-0.5f+offset, 1f, 0f);
+        glEnd();
+        glBegin(GL_LINES);
+        
+        
         glEnd();
         //keep at end of fxn!
         glfwSwapBuffers(window);
