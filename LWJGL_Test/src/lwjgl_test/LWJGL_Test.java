@@ -46,7 +46,10 @@ public class LWJGL_Test {
         glVertex3f(-0.5f+offset, 1f, 0f);
         glEnd();
         glBegin(GL_LINES);
-        
+        glColor3f(1, 1, 1);
+        glVertex3f(-1, -1, 0);
+        glColor3f(1, 1, 1);
+        glVertex3f(1, 1, 0);
         
         glEnd();
         //keep at end of fxn!
