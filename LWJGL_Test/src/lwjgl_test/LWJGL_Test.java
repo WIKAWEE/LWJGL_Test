@@ -14,8 +14,10 @@ import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
+import org.lwjgl.opengl.GL;
 
 public class LWJGL_Test {
+    double time;
     boolean screenRunning = false;
     int windowWidth = 1575;
     int windowHeight = 675;
@@ -28,6 +30,24 @@ public class LWJGL_Test {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
+    private void cycle(){
+        glfwPollEvents();
+        time = glfwGetTime();
+    }
+    private void render(){
+        glClear(GL_COLOR_BUFFER_BIT);
+        float offset = (float)time/20f-0.5f;
+        glBegin(GL_TRIANGLES);
+        glColor3f(0f, 1f, 0.8f);
+        glVertex3f(-0.5f+offset, -1f, 0f);
+        glColor3f(0f, 0f, 0f);
+        glVertex3f(0.5f+offset, -1f, 0f);
+        glColor3f(0.19f, 0f, 0f);
+        glVertex3f(-0.5f+offset, 1f, 0f);
+        glEnd();
+        //keep at end of fxn!
+        glfwSwapBuffers(window);
+    }
     private void init() {
         windowInit();
         openglInit();
@@ -38,11 +58,11 @@ public class LWJGL_Test {
         model[0].displayData(ModelW.DISP_APW);
     }
     private void openglInit(){
-        if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-            
-        }
         glfwMakeContextCurrent(window);
+        GL.createCapabilities();
         glViewport(0, 0, windowWidth, windowHeight);
+        time = glfwGetTime();
+        glfwSwapInterval(1);
     }
     private void windowInit(){
         //if (!glfwInit()){ line must be first!!!
@@ -84,7 +104,8 @@ public class LWJGL_Test {
     }
     private void loop() {
         while(screenRunning){
-            glfwPollEvents();
+            cycle();
+            render();
         }
     }
     public static void main(String[] args) {
