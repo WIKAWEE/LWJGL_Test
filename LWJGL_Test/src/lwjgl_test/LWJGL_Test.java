@@ -41,14 +41,14 @@ public class LWJGL_Test {
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_TRIANGLES);
-        glColor3f(0f, 1f, 0.65f);
+        glColor3f(0f, 0.25f, 0.16f);
         glVertex3f(1f, 1f, 0f);
         glColor3f(0f, 0f, 0f);
         glVertex3f(-1, 1f, 0f);
         glVertex3f(1f, -1f, 0f);
         glVertex3f(-1, 1f, 0f);
         glVertex3f(1f, -1f, 0f);
-        glColor3f(0.8f, 0f, 0.5f);
+        glColor3f(0.2f, 0f, 0.125f);
         glVertex3f(-1f, -1f, 0f);
         glEnd();
         glBegin(GL_LINES);
