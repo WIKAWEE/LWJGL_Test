@@ -17,6 +17,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 import org.lwjgl.opengl.GL;
 
 public class LWJGL_Test {
+    double fieldOfView = 1.221730476;
+    float pScalarW = 1;
+    float pScalarH = 1;
     double time;
     boolean screenRunning = false;
     int windowWidth = 1575;
@@ -33,24 +36,30 @@ public class LWJGL_Test {
     private void cycle(){
         glfwPollEvents();
         time = glfwGetTime();
+        model[0].translate(new Vec(0.01f, 0, 0));
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT);
-        float offset = (float)time/20f-0.5f;
         glBegin(GL_TRIANGLES);
         glColor3f(0f, 1f, 0.65f);
-        glVertex3f(-0.5f+offset, -1f, 0f);
-        glColor3f(0f, 0.9f, 1f);
-        glVertex3f(0.5f+offset, -1f, 0f);
-        glColor3f(0.3f, 0.7f, 1f);
-        glVertex3f(-0.5f+offset, 1f, 0f);
+        glVertex3f(1f, 1f, 0f);
+        glColor3f(0f, 0f, 0f);
+        glVertex3f(-1, 1f, 0f);
+        glVertex3f(1f, -1f, 0f);
+        glVertex3f(-1, 1f, 0f);
+        glVertex3f(1f, -1f, 0f);
+        glColor3f(0.8f, 0f, 0.5f);
+        glVertex3f(-1f, -1f, 0f);
         glEnd();
         glBegin(GL_LINES);
-        glColor3f(1, 1, 1);
-        glVertex3f(-1, -1, 0);
-        glColor3f(1, 1, 1);
-        glVertex3f(1, 1, 0);
-        
+        for(Line l : model[0].line){
+            Vec a = model[0].point[l.aPointer].cords;
+            Vec b = model[0].point[l.bPointer].cords;
+            Color c = model[0].color[l.cPointer];
+            glColor3f(c.r, c.g, c.b);
+            glVertex3f(-pScalarW*a.x/a.z, -pScalarH*a.y/a.z, 0);
+            glVertex3f(-pScalarW*b.x/b.z, -pScalarH*b.y/b.z, 0);
+        }
         glEnd();
         //keep at end of fxn!
         glfwSwapBuffers(window);
@@ -61,7 +70,7 @@ public class LWJGL_Test {
         model = new Model[1];
         //init model loading on first model
         model[0] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[0].translate(new Vec(0, 0, -12));
+        model[0].translate(new Vec(-5, 0, -6));
         model[0].displayData(ModelW.DISP_APW);
     }
     private void openglInit(){
@@ -70,6 +79,8 @@ public class LWJGL_Test {
         glViewport(0, 0, windowWidth, windowHeight);
         time = glfwGetTime();
         glfwSwapInterval(1);
+        pScalarW = (float)Math.atan(fieldOfView/2);
+        pScalarH = 21*pScalarW/9;
     }
     private void windowInit(){
         //if (!glfwInit()){ line must be first!!!
