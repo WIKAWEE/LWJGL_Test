@@ -20,7 +20,7 @@ public class LWJGL_Test {
     double fieldOfView = 1.221730476;
     float pScalarW = 1;
     float pScalarH = 1;
-    double time;
+    double frameStart;
     boolean screenRunning = false;
     int windowWidth = 1575;
     int windowHeight = 675;
@@ -34,9 +34,8 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void cycle(){
-        glfwPollEvents();
-        time = glfwGetTime();
-        model[0].translate(new Vec(0.01f, 0, 0));
+        model[0].rotateY(new Vec(0.5f, 0, -7.5f), 0.01);
+        model[1].rotateY(new Vec(-5, 0, -6), -0.1047197551f/4);
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT);
@@ -52,13 +51,15 @@ public class LWJGL_Test {
         glVertex3f(-1f, -1f, 0f);
         glEnd();
         glBegin(GL_LINES);
-        for(Line l : model[0].line){
-            Vec a = model[0].point[l.aPointer].cords;
-            Vec b = model[0].point[l.bPointer].cords;
-            Color c = model[0].color[l.cPointer];
-            glColor3f(c.r, c.g, c.b);
-            glVertex3f(-pScalarW*a.x/a.z, -pScalarH*a.y/a.z, 0);
-            glVertex3f(-pScalarW*b.x/b.z, -pScalarH*b.y/b.z, 0);
+        for(int i = 0; i < model.length; i++){
+            for(Line l : model[i].line){
+                Vec a = model[i].point[l.aPointer].cords;
+                Vec b = model[i].point[l.bPointer].cords;
+                Color c = model[i].color[l.cPointer];
+                glColor3f(c.r, c.g, c.b);
+                glVertex3f(-pScalarW*a.x/a.z, -pScalarH*a.y/a.z, 0);
+                glVertex3f(-pScalarW*b.x/b.z, -pScalarH*b.y/b.z, 0);
+            }
         }
         glEnd();
         //keep at end of fxn!
@@ -67,17 +68,19 @@ public class LWJGL_Test {
     private void init() {
         windowInit();
         openglInit();
-        model = new Model[1];
+        model = new Model[2];
         //init model loading on first model
-        model[0] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[0].translate(new Vec(-5, 0, -6));
+        model[0] = getModel(0, "struct.apw", Model.MODELW);
+        model[0].translate(new Vec(0, 0, -6));
         model[0].displayData(ModelW.DISP_APW);
+        model[1] = getModel(0, "pyramid.apw", Model.MODELW);
+        model[1].translate(new Vec(-5f, 0, -6));
+        model[1].displayData(ModelW.DISP_APW);
     }
     private void openglInit(){
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glViewport(0, 0, windowWidth, windowHeight);
-        time = glfwGetTime();
         glfwSwapInterval(1);
         pScalarW = (float)Math.atan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
@@ -122,8 +125,11 @@ public class LWJGL_Test {
     }
     private void loop() {
         while(screenRunning){
+            frameStart = glfwGetTime();
+            glfwPollEvents();
             cycle();
             render();
+            while(glfwGetTime() < frameStart+0.01666666666667){}
         }
     }
     public static void main(String[] args) {
