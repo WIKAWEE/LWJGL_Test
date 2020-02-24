@@ -6,8 +6,6 @@ public class ModelW extends Model{
     int pointCount;
     int colorCount;
     int lineCount;
-    Color[] color;
-    Line[] line;
     public ModelW(Point[] p, Color[] c, Line[] l){
         this.point = p;
         this.color = c;

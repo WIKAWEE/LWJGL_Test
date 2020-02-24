@@ -84,6 +84,8 @@ public class LWJGL_Test {
         glfwSwapInterval(1);
         pScalarW = (float)Math.atan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
+        System.out.println("Running openGL version "+glGetString(GL_VERSION));
+        
     }
     private void windowInit(){
         //if (!glfwInit()){ line must be first!!!
