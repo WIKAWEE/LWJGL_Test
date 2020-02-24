@@ -17,7 +17,11 @@ import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 import org.lwjgl.opengl.GL;
 
 public class LWJGL_Test {
+    //70degrees init
     double fieldOfView = 1.221730476;
+    //translate away from cam for preview objs
+    float distance = 0;
+    
     float pScalarW = 1;
     float pScalarH = 1;
     double frameStart;
@@ -34,8 +38,10 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void cycle(){
-        model[0].rotateY(new Vec(0.5f, 0, -7.5f), 0.01);
-        model[1].rotateY(new Vec(-5, 0, -6), -0.1047197551f/4);
+        model[0].rotate(0.01f, 0.0099f, 0f);
+        model[1].rotate(0, -0.1047197551f/4, 0);
+        for(Model m : model)
+            m.updateCoords();
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT);
@@ -53,8 +59,8 @@ public class LWJGL_Test {
         glBegin(GL_LINES);
         for(int i = 0; i < model.length; i++){
             for(Line l : model[i].line){
-                Vec a = model[i].point[l.aPointer].cords;
-                Vec b = model[i].point[l.bPointer].cords;
+                Vec a = model[i].pointDisp[l.aPointer].cords;
+                Vec b = model[i].pointDisp[l.bPointer].cords;
                 Color c = model[i].color[l.cPointer];
                 glColor3f(c.r, c.g, c.b);
                 glVertex3f(-pScalarW*a.x/a.z, -pScalarH*a.y/a.z, 0);
@@ -66,15 +72,17 @@ public class LWJGL_Test {
         glfwSwapBuffers(window);
     }
     private void init() {
+        fieldOfView = 0.6;
+        distance = -20;
         windowInit();
         openglInit();
         model = new Model[2];
         //init model loading on first model
         model[0] = getModel(0, "struct.apw", Model.MODELW);
-        model[0].translate(new Vec(0, 0, -6));
+        model[0].translate(new Vec(1.5f, 0, distance));
         model[0].displayData(ModelW.DISP_APW);
         model[1] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[1].translate(new Vec(-5f, 0, -6));
+        model[1].translate(new Vec(-4f, 0, distance));
         model[1].displayData(ModelW.DISP_APW);
     }
     private void openglInit(){
@@ -82,7 +90,7 @@ public class LWJGL_Test {
         GL.createCapabilities();
         glViewport(0, 0, windowWidth, windowHeight);
         glfwSwapInterval(1);
-        pScalarW = (float)Math.atan(fieldOfView/2);
+        pScalarW = 1/(float)Math.tan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
         System.out.println("Running openGL version "+glGetString(GL_VERSION));
         

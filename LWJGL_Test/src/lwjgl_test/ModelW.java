@@ -8,6 +8,7 @@ public class ModelW extends Model{
     int lineCount;
     public ModelW(Point[] p, Color[] c, Line[] l){
         this.point = p;
+        this.pointDisp = p;
         this.color = c;
         this.line = l;
         this.pointCount = point.length;
