@@ -7,13 +7,23 @@ public class ModelW extends Model{
     int colorCount;
     int lineCount;
     public ModelW(Point[] p, Color[] c, Line[] l){
-        this.point = p;
-        this.pointDisp = p;
-        this.color = c;
-        this.line = l;
-        this.pointCount = point.length;
-        this.colorCount = color.length;
-        this.lineCount = line.length;
+        point = new Point[p.length];
+        pointDisp = new Point[p.length];
+        for(int i = 0; i < p.length; i++){
+            point[i] = new Point(p[i].cords.x, p[i].cords.y, p[i].cords.z);
+            pointDisp[i] = new Point(p[i].cords.x, p[i].cords.y, p[i].cords.z);
+        }
+        color = new Color[c.length];
+        for(int i = 0; i < c.length; i++){
+            color[i] = new Color(c[i].r, c[i].g, c[i].b);
+        }
+        line = new Line[l.length];
+        for(int i = 0; i < l.length; i++){
+            line[i] = new Line(l[i].aPointer, l[i].bPointer, l[i].cPointer);
+        }
+        pointCount = point.length;
+        colorCount = color.length;
+        lineCount = line.length;
     }
     
     @Override

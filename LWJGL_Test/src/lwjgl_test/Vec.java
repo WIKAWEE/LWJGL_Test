@@ -21,6 +21,9 @@ public class Vec {
     public static Vec add(Vec v1, Vec v2){
         return new Vec(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
     }
+    public static Vec subtract(Vec v1, Vec v2){
+        return new Vec(v1.x-v2.x, v1.y-v2.y, v1.z-v2.z);
+    }
     public static Vec scale(Vec v, float power){
         return new Vec(v.x*power, v.y*power, v.z*power);
     }

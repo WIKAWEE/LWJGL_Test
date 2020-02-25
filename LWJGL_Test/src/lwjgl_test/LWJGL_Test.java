@@ -38,8 +38,8 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void cycle(){
-        model[0].rotate(0.01f, 0.0099f, 0f);
-        model[1].rotate(0, -0.1047197551f/4, 0);
+        model[0].rotate(0f, 0.0099f, 0.01f);
+        model[1].rotate(0.02f, -0.1047197551f/4, 0);
         for(Model m : model)
             m.updateCoords();
     }
@@ -73,7 +73,7 @@ public class LWJGL_Test {
     }
     private void init() {
         fieldOfView = 0.6;
-        distance = -20;
+        distance = -20f;
         windowInit();
         openglInit();
         model = new Model[2];
@@ -81,6 +81,7 @@ public class LWJGL_Test {
         model[0] = getModel(0, "struct.apw", Model.MODELW);
         model[0].translate(new Vec(1.5f, 0, distance));
         model[0].displayData(ModelW.DISP_APW);
+        model[0].setRotCenter(0.5f, 0f, -1.5f);
         model[1] = getModel(0, "pyramid.apw", Model.MODELW);
         model[1].translate(new Vec(-4f, 0, distance));
         model[1].displayData(ModelW.DISP_APW);
