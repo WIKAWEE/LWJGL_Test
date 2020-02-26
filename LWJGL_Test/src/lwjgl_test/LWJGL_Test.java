@@ -38,7 +38,7 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void cycle(){
-        model[0].rotate(0f, 0.0099f, 0.01f);
+        model[0].rotate(0f, 0f, 0.01f);
         model[1].rotate(0.02f, -0.1047197551f/4, 0);
         for(Model m : model)
             m.updateCoords();

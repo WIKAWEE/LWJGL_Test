@@ -42,4 +42,22 @@ public class Vec {
     public static Vec scale(Vec v, Point o, float powerX, float powerY, float powerZ){
         return new Vec((v.x-o.getX())*powerX+o.getX(), (v.y-o.getY())*powerY+o.getY(), (v.z-o.getZ())*powerZ+o.getZ());
     }
+    public static Vec rotateVecX(Vec v, double angle){
+        Vec pTemp = new Vec(v.x, v.y, v.z);
+        pTemp.y = v.y*(float)Math.cos(angle) - v.z*(float)Math.sin(angle);
+        pTemp.z = v.y*(float)Math.sin(angle) + v.z*(float)Math.cos(angle);
+        return pTemp;
+    }
+    public static Vec rotateVecY(Vec v, double angle){
+        Vec pTemp = new Vec(v.x, v.y, v.z);
+        pTemp.x = v.x*(float)Math.cos(angle) - v.y*(float)Math.sin(angle);
+        pTemp.y = v.x*(float)Math.sin(angle) + v.y*(float)Math.cos(angle);
+        return pTemp;
+    }
+    public static Vec rotateVecZ(Vec v, double angle){
+        Vec pTemp = new Vec(v.x, v.y, v.z);
+        pTemp.z = v.z*(float)Math.cos(angle) - v.x*(float)Math.sin(angle);
+        pTemp.x = v.z*(float)Math.sin(angle) + v.x*(float)Math.cos(angle);
+        return pTemp;
+    }
 }

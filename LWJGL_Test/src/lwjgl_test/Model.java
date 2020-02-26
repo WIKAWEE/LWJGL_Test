@@ -1,6 +1,17 @@
 package lwjgl_test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static lwjgl_test.Vec.add;
+import static lwjgl_test.Vec.rotateVecX;
+import static lwjgl_test.Vec.rotateVecY;
+import static lwjgl_test.Vec.rotateVecZ;
+//import static lwjgl_test.Vec.rotateVecZ;
 import static lwjgl_test.Vec.subtract;
 
 public abstract class Model {
@@ -54,6 +65,40 @@ public abstract class Model {
     public void moveRotCenter(float x, float y, float z){
         rotationCenter = new Vec(rotationCenter.x+x, rotationCenter.y+y, rotationCenter.z+z);
     }
+    public ModelW readObjModelW(File objFile) throws FileNotFoundException{
+        Point[] p = null;
+        Color[] c = {new Color(0, 1, 0)};
+        Line[] l = null;
+        String currLine = null;
+        BufferedReader reader = new BufferedReader(new FileReader(objFile));
+        System.out.println("reader init successful");
+        boolean going = true;
+        while(going){
+            try{
+                currLine = reader.readLine();
+                String[] temp = currLine.split(" ", 0);
+                if("v".equals(temp[1])){
+                    Point[] pTemp = new Point[p.length+1];
+                    for(int i = 0; i < p.length; i++)
+                        pTemp[i] = p[i];
+                    pTemp[p.length] = new Point(Float.parseFloat(temp[1]), Float.parseFloat(temp[2]), Float.parseFloat(temp[3]));
+                    p = pTemp;
+                }
+                if("f".equals(temp[1])){
+                    Line[] lTemp = new Line[l.length+3];
+                    for(int i = 0; i < l.length; i++)
+                        lTemp[i] = l[i];
+                    lTemp[l.length] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
+                    lTemp[l.length+1] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
+                    lTemp[l.length+2] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
+                    l = lTemp;
+                }
+            }catch(IOException e){
+                going = false;
+            }
+        }
+        return new ModelW(p, c, l);
+    }
     void updateCoords() {
         System.out.println("scale "+scale.x+" "+scale.y+" "+scale.z);
         System.out.println("rotation "+rotation.x+" "+rotation.y+" "+rotation.z);
@@ -69,19 +114,10 @@ public abstract class Model {
             pTemp.z = scale.z*c.z;
             //rotation pre-move
             pTemp = subtract(pTemp, rotationCenter);
-            //x rot
-            //pTemp.y = c.y*(float)Math.cos(rotation.x) - c.z*(float)Math.sin(rotation.x);
-            //pTemp.z = c.y*(float)Math.sin(rotation.x) + c.z*(float)Math.cos(rotation.x);
-            c.y = pTemp.y;
-            c.z = pTemp.z;
-            //y rot
-            pTemp.z = c.z*(float)Math.cos(rotation.y) - c.x*(float)Math.sin(rotation.y);
-            pTemp.x = c.z*(float)Math.sin(rotation.y) + c.x*(float)Math.cos(rotation.y);
-            c.x = pTemp.x;
-            c.z = pTemp.z;
-            //z rot
-            //pTemp.x = c.x*(float)Math.cos(rotation.z) - c.y*(float)Math.sin(rotation.z);
-            //pTemp.y = c.x*(float)Math.sin(rotation.z) + c.y*(float)Math.cos(rotation.z);
+            //rot
+            pTemp = rotateVecX(pTemp, rotation.x);
+            pTemp = rotateVecY(pTemp, rotation.y);
+            pTemp = rotateVecZ(pTemp, rotation.z);
             //re-center after rot
             pTemp = add(pTemp, rotationCenter);
             //translate
