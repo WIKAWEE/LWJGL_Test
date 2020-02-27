@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lwjgl_test.Exception.WrongLengthException;
 import lwjgl_test.Exception.WrongTypeException;
 import static org.lwjgl.glfw.GLFW.*;
@@ -40,6 +42,7 @@ public class LWJGL_Test {
     private void cycle(){
         model[0].rotate(0f, 0f, 0.01f);
         model[1].rotate(0.02f, -0.1047197551f/4, 0);
+        model[2].rotate(0.02f, -0.1047197551f/4, 0);
         for(Model m : model)
             m.updateCoords();
     }
@@ -76,7 +79,7 @@ public class LWJGL_Test {
         distance = -20f;
         windowInit();
         openglInit();
-        model = new Model[2];
+        model = new Model[3];
         //init model loading on first model
         model[0] = getModel(0, "struct.apw", Model.MODELW);
         model[0].translate(new Vec(1.5f, 0, distance));
@@ -85,6 +88,13 @@ public class LWJGL_Test {
         model[1] = getModel(0, "pyramid.apw", Model.MODELW);
         model[1].translate(new Vec(-4f, 0, distance));
         model[1].displayData(ModelW.DISP_APW);
+        try {
+            model[2] = readObjModelW(new File("res/teapot.obj"));
+            model[2].translate(new Vec(0, -2, distance-2f));
+            model[2].displayData(ModelW.DISP_APW);
+        } catch (FileNotFoundException ex) {
+            System.out.println("TEAPOT FILE NOT FOUND!");
+        }
     }
     private void openglInit(){
         glfwMakeContextCurrent(window);
@@ -95,6 +105,62 @@ public class LWJGL_Test {
         pScalarH = 21*pScalarW/9;
         System.out.println("Running openGL version "+glGetString(GL_VERSION));
         
+    }
+    public ModelW readObjModelW(File objFile) throws FileNotFoundException{
+        Point[] p = new Point[0];
+        Color[] c = {new Color(0, 1, 0)};
+        Line[] l = new Line[0];
+        String currLine = null;
+        BufferedReader reader = new BufferedReader(new FileReader(objFile));
+        System.out.println("reader init successful");
+        boolean going = true;
+        while(going){
+            try{
+                currLine = reader.readLine();
+                if(currLine != null){
+                    String[] temp = currLine.split(" ", 0);
+                    if("v".equals(temp[0])){
+                        Point[] pTemp = new Point[p.length+1];
+                        for(int i = 0; i < p.length; i++)
+                            pTemp[i] = p[i];
+                        pTemp[p.length] = new Point(Float.parseFloat(temp[1]), Float.parseFloat(temp[2]), Float.parseFloat(temp[3]));
+                        p = pTemp;
+                    }
+                    if("f".equals(temp[0])){
+                        l = addLineIfNoDuplicate(l, Integer.parseInt(temp[1])-1, Integer.parseInt(temp[2])-1);
+                        l = addLineIfNoDuplicate(l, Integer.parseInt(temp[2])-1, Integer.parseInt(temp[3])-1);
+                        l = addLineIfNoDuplicate(l, Integer.parseInt(temp[3])-1, Integer.parseInt(temp[1])-1);
+                    }
+                }else{
+                    going = false;
+                    
+                }
+            }catch(IOException e){
+                System.out.println("IOEXCEPTION");
+                going = false;
+            }
+        }
+        return new ModelW(p, c, l);
+    }
+    private Line[] addLineIfNoDuplicate(Line[] l, int aPoint, int bPoint){
+        boolean doIt = true;
+        System.out.println(aPoint+" "+bPoint);
+        for(Line ln : l){
+            if(ln.aPointer == aPoint && ln.bPointer == bPoint)
+                doIt = false;
+            if(ln.bPointer == aPoint && ln.aPointer == bPoint)
+                doIt = false;
+        }
+        if(doIt){
+            Line[] lTemp = new Line[l.length+1];
+            for(int i = 0; i < l.length; i++)
+                lTemp[i] = l[i];
+            lTemp[l.length] = new Line(aPoint, bPoint, 0);
+            return lTemp;
+        }
+        else{
+            return l;
+        }
     }
     private void windowInit(){
         //if (!glfwInit()){ line must be first!!!

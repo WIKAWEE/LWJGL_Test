@@ -65,40 +65,6 @@ public abstract class Model {
     public void moveRotCenter(float x, float y, float z){
         rotationCenter = new Vec(rotationCenter.x+x, rotationCenter.y+y, rotationCenter.z+z);
     }
-    public ModelW readObjModelW(File objFile) throws FileNotFoundException{
-        Point[] p = null;
-        Color[] c = {new Color(0, 1, 0)};
-        Line[] l = null;
-        String currLine = null;
-        BufferedReader reader = new BufferedReader(new FileReader(objFile));
-        System.out.println("reader init successful");
-        boolean going = true;
-        while(going){
-            try{
-                currLine = reader.readLine();
-                String[] temp = currLine.split(" ", 0);
-                if("v".equals(temp[1])){
-                    Point[] pTemp = new Point[p.length+1];
-                    for(int i = 0; i < p.length; i++)
-                        pTemp[i] = p[i];
-                    pTemp[p.length] = new Point(Float.parseFloat(temp[1]), Float.parseFloat(temp[2]), Float.parseFloat(temp[3]));
-                    p = pTemp;
-                }
-                if("f".equals(temp[1])){
-                    Line[] lTemp = new Line[l.length+3];
-                    for(int i = 0; i < l.length; i++)
-                        lTemp[i] = l[i];
-                    lTemp[l.length] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
-                    lTemp[l.length+1] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
-                    lTemp[l.length+2] = new Line(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), 0);
-                    l = lTemp;
-                }
-            }catch(IOException e){
-                going = false;
-            }
-        }
-        return new ModelW(p, c, l);
-    }
     void updateCoords() {
         System.out.println("scale "+scale.x+" "+scale.y+" "+scale.z);
         System.out.println("rotation "+rotation.x+" "+rotation.y+" "+rotation.z);
