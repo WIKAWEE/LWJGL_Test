@@ -46,7 +46,30 @@ public class LWJGL_Test {
         for(Model m : model)
             m.updateCoords();
     }
+    private void openglInit(){
+        glfwMakeContextCurrent(window);
+        GL.createCapabilities();
+        glViewport(0, 0, windowWidth, windowHeight);
+        glfwSwapInterval(1);
+        pScalarW = 1/(float)Math.tan(fieldOfView/2);
+        pScalarH = 21*pScalarW/9;
+        System.out.println("Running openGL version "+glGetString(GL_VERSION));
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glShadeModel(GL_SMOOTH);
+        glClearDepth(1);
+        glClearColor(0, 0, 0, 0);
+        glDepthFunc(GL_LEQUAL);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    }
     private void render(){
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+        
+    }
+    private void renderOld(){
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_TRIANGLES);
         glColor3f(0f, 0.25f, 0.16f);
@@ -95,16 +118,6 @@ public class LWJGL_Test {
         } catch (FileNotFoundException ex) {
             System.out.println("TEAPOT FILE NOT FOUND!");
         }
-    }
-    private void openglInit(){
-        glfwMakeContextCurrent(window);
-        GL.createCapabilities();
-        glViewport(0, 0, windowWidth, windowHeight);
-        glfwSwapInterval(1);
-        pScalarW = 1/(float)Math.tan(fieldOfView/2);
-        pScalarH = 21*pScalarW/9;
-        System.out.println("Running openGL version "+glGetString(GL_VERSION));
-        
     }
     public ModelW readObjModelW(File objFile) throws FileNotFoundException{
         Point[] p = new Point[0];
