@@ -15,10 +15,12 @@ import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 import org.lwjgl.opengl.GL;
 
 public class LWJGL_Test {
+    int programId, vertexShaderId, fragmentShaderId;
     //70degrees init
     double fieldOfView = 1.221730476;
     //translate away from cam for preview objs
@@ -40,9 +42,6 @@ public class LWJGL_Test {
         glfwTerminate();
     }
     private void cycle(){
-        model[0].rotate(0f, 0f, 0.01f);
-        model[1].rotate(0.02f, -0.1047197551f/4, 0);
-        model[2].rotate(0.02f, -0.1047197551f/4, 0);
         for(Model m : model)
             m.updateCoords();
     }
@@ -54,34 +53,38 @@ public class LWJGL_Test {
         pScalarW = 1/(float)Math.tan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
         System.out.println("Running openGL version "+glGetString(GL_VERSION));
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glShadeModel(GL_SMOOTH);
-        glClearDepth(1);
-        glClearColor(0, 0, 0, 0);
-        glDepthFunc(GL_LEQUAL);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        programId = glCreateProgram();
+        if(programId == 0){
+            System.out.println("SHADER. COULDN'T MAKE SHADER.");
+            System.exit(0);
+        }
+        vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShaderId);
+        glCompileShader(vertexShaderId);
+        if(glGetShaderi(vertexShaderId, GL_COMPILE_STATUS) == 0){
+            System.out.println("VERTEX SHADER FAILURE");
+            System.exit(0);
+        }
+        fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShaderId, Utils.loadResource("/vertex.vs"));
+        glCompileShader(fragmentShaderId);
+        if(glGetShaderi(fragmentShaderId, GL_COMPILE_STATUS) == 0){
+            System.out.println("FRAGMENT SHADER FAILURE");
+            System.exit(0);
+        }
+                
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
         
+        
+        
+        //keep at end of fxn!
+        glfwSwapBuffers(window);
     }
     private void renderOld(){
         glClear(GL_COLOR_BUFFER_BIT);
-        glBegin(GL_TRIANGLES);
-        glColor3f(0f, 0.25f, 0.16f);
-        glVertex3f(1f, 1f, 0f);
-        glColor3f(0f, 0f, 0f);
-        glVertex3f(-1, 1f, 0f);
-        glVertex3f(1f, -1f, 0f);
-        glVertex3f(-1, 1f, 0f);
-        glVertex3f(1f, -1f, 0f);
-        glColor3f(0.2f, 0f, 0.125f);
-        glVertex3f(-1f, -1f, 0f);
-        glEnd();
         glBegin(GL_LINES);
         for(int i = 0; i < model.length; i++){
             for(Line l : model[i].line){
@@ -99,25 +102,13 @@ public class LWJGL_Test {
     }
     private void init() {
         fieldOfView = 0.6;
-        distance = -20f;
         windowInit();
         openglInit();
-        model = new Model[3];
+        model = new Model[1];
         //init model loading on first model
-        model[0] = getModel(0, "struct.apw", Model.MODELW);
-        model[0].translate(new Vec(1.5f, 0, distance));
+        model[0] = getModel(0, "car.apw", Model.MODELW);
+        model[0].translate(new Vec(0, -2, -15));
         model[0].displayData(ModelW.DISP_APW);
-        model[0].setRotCenter(0.5f, 0f, -1.5f);
-        model[1] = getModel(0, "pyramid.apw", Model.MODELW);
-        model[1].translate(new Vec(-4f, 0, distance));
-        model[1].displayData(ModelW.DISP_APW);
-        try {
-            model[2] = readObjModelW(new File("res/teapot.obj"));
-            model[2].translate(new Vec(0, -2, distance-2f));
-            model[2].displayData(ModelW.DISP_APW);
-        } catch (FileNotFoundException ex) {
-            System.out.println("TEAPOT FILE NOT FOUND!");
-        }
     }
     public ModelW readObjModelW(File objFile) throws FileNotFoundException{
         Point[] p = new Point[0];
@@ -157,7 +148,6 @@ public class LWJGL_Test {
     }
     private Line[] addLineIfNoDuplicate(Line[] l, int aPoint, int bPoint){
         boolean doIt = true;
-        System.out.println(aPoint+" "+bPoint);
         for(Line ln : l){
             if(ln.aPointer == aPoint && ln.bPointer == bPoint)
                 doIt = false;

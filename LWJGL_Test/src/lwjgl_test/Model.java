@@ -66,14 +66,14 @@ public abstract class Model {
         rotationCenter = new Vec(rotationCenter.x+x, rotationCenter.y+y, rotationCenter.z+z);
     }
     void updateCoords() {
-        System.out.println("scale "+scale.x+" "+scale.y+" "+scale.z);
-        System.out.println("rotation "+rotation.x+" "+rotation.y+" "+rotation.z);
-        System.out.println("position "+position.x+" "+position.y+" "+position.z);
+        //System.out.println("scale "+scale.x+" "+scale.y+" "+scale.z);
+        //System.out.println("rotation "+rotation.x+" "+rotation.y+" "+rotation.z);
+        //System.out.println("position "+position.x+" "+position.y+" "+position.z);
         for(int i = 0; i < point.length; i++){
             Vec c = new Vec(point[i].cords.x, point[i].cords.y, point[i].cords.z);
             Vec pTemp = new Vec(point[i].cords.x, point[i].cords.y, point[i].cords.z);
             Vec rotC = new Vec(rotationCenter.x, rotationCenter.y, rotationCenter.z);
-            System.out.println("point "+i+" "+c.x+" "+c.y+" "+c.z);
+            //System.out.println("point "+i+" "+c.x+" "+c.y+" "+c.z);
             //scale
             pTemp.x = scale.x*c.x;
             pTemp.y = scale.y*c.y;
@@ -90,7 +90,7 @@ public abstract class Model {
             pTemp = add(pTemp, position);
             this.pointDisp[i].cords = pTemp;
         }
-        System.out.println();
+        //System.out.println();
     }
     /*old-timey translation methods. Bad.
     public void scale(float power){
