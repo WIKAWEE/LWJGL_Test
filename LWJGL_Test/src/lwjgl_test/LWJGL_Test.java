@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lwjgl_test.Exception.WrongLengthException;
@@ -20,7 +22,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 import org.lwjgl.opengl.GL;
 
 public class LWJGL_Test {
-    int programId, vertexShaderId, fragmentShaderId;
+    int pid, vid, fid;
     //70degrees init
     double fieldOfView = 1.221730476;
     //translate away from cam for preview objs
@@ -38,6 +40,8 @@ public class LWJGL_Test {
     public void run(){
         init();
         loop();
+        glUseProgram(0);
+        glDeleteProgram(pid);
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -53,26 +57,58 @@ public class LWJGL_Test {
         pScalarW = 1/(float)Math.tan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
         System.out.println("Running openGL version "+glGetString(GL_VERSION));
-        programId = glCreateProgram();
-        if(programId == 0){
-            System.out.println("SHADER. COULDN'T MAKE SHADER.");
+        pid = glCreateProgram();
+        if(pid == 0){
+            System.out.println("SHADER. COULDN'T MAKE program");
             System.exit(0);
         }
-        vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShaderId);
-        glCompileShader(vertexShaderId);
-        if(glGetShaderi(vertexShaderId, GL_COMPILE_STATUS) == 0){
-            System.out.println("VERTEX SHADER FAILURE");
+        String vsCode = "";
+        try {vsCode = new String(Files.readAllBytes(Paths.get("res/vertex.vs")));
+        }catch(Exception ex){error(ex.getMessage());}
+        System.out.println("");
+        System.out.println("vsCode =");
+        System.out.println(vsCode);
+        vid = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vid, vsCode);
+        glCompileShader(vid);
+        if(glGetShaderi(vid, GL_COMPILE_STATUS) == 0){
+            System.out.println("vertex SHADER FAILURE");
             System.exit(0);
         }
-        fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShaderId, Utils.loadResource("/vertex.vs"));
-        glCompileShader(fragmentShaderId);
-        if(glGetShaderi(fragmentShaderId, GL_COMPILE_STATUS) == 0){
+        String fsCode = "";
+        try {fsCode = new String(Files.readAllBytes(Paths.get("res/fragment.fs")));
+        }catch(Exception ex){error(ex.getMessage());}
+        System.out.println("");
+        System.out.println("fsCode =");
+        System.out.println(fsCode);
+        fid = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fid, fsCode);
+        glCompileShader(fid);
+        if(glGetShaderi(fid, GL_COMPILE_STATUS) == 0){
             System.out.println("FRAGMENT SHADER FAILURE");
             System.exit(0);
         }
+        glAttachShader(pid, vid);
+        glAttachShader(pid, fid);
+        glLinkProgram(pid);
+        if(glGetProgrami(pid, GL_LINK_STATUS) == 0){
+            error("failed to link program");
+        }
+        glValidateProgram(pid);
+        if(glGetProgrami(pid, GL_VALIDATE_STATUS) == 0){
+            System.out.println("WARNING: INVALIDATED PGM");
+        }
+        glUseProgram(pid);
+        
                 
+    }
+    private void error(String m){
+        System.out.println(m);
+        System.exit(0);
+    }
+    private void error(Exception e){
+        System.out.println(e.getMessage());
+        System.exit(0);
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
