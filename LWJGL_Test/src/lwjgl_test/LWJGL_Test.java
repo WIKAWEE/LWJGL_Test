@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lwjgl_test.Exception.WrongLengthException;
@@ -19,9 +21,14 @@ import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
+import static org.lwjgl.opengl.ARBVertexArrayObject.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryUtil;
 
 public class LWJGL_Test {
+    int frameCount;
+    static int vao;
+    static FloatBuffer vertexBuffer;
     int pid, vid, fid;
     //70degrees init
     double fieldOfView = 1.221730476;
@@ -40,7 +47,9 @@ public class LWJGL_Test {
     public void run(){
         init();
         loop();
-        glUseProgram(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        MemoryUtil.memFree(vertexBuffer);
         glDeleteProgram(pid);
         glfwDestroyWindow(window);
         glfwTerminate();
@@ -98,9 +107,30 @@ public class LWJGL_Test {
         if(glGetProgrami(pid, GL_VALIDATE_STATUS) == 0){
             System.out.println("WARNING: INVALIDATED PGM");
         }
-        glUseProgram(pid);
-        
-                
+        glDetachShader(pid, vid);
+        glDetachShader(pid, fid);
+        int vboLength = 0;
+        for(Model m: model)
+            vboLength += m.point.length*3;
+        vertexBuffer = MemoryUtil.memAllocFloat(vboLength);
+        for(Model m: model){
+            for(Point p: m.pointDisp){
+                vertexBuffer.put(p.getX());
+                vertexBuffer.put(p.getY());
+                vertexBuffer.put(p.getZ());
+            }
+        }
+        vertexBuffer.flip();
+        while(vertexBuffer.hasRemaining()){
+            System.out.println("    "+vertexBuffer.get());
+        }
+        vao = glGenVertexArrays();
+        glBindVertexArray(vao);
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
+        memFree(vertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     }
     private void error(String m){
         System.out.println(m);
@@ -112,12 +142,21 @@ public class LWJGL_Test {
     }
     private void render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
+        glUseProgram(pid);
+        glBindVertexArray(vao);
+        glEnableVertexAttribArray(0);
+        
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        
+        glDisableVertexAttribArray(0);
+        glBindVertexArray(0);
         
         
-        
+        glUseProgram(0);
         //keep at end of fxn!
         glfwSwapBuffers(window);
+        frameCount++;
+        System.out.println("frame "+frameCount);
     }
     private void renderOld(){
         glClear(GL_COLOR_BUFFER_BIT);
@@ -139,12 +178,16 @@ public class LWJGL_Test {
     private void init() {
         fieldOfView = 0.6;
         windowInit();
-        openglInit();
         model = new Model[1];
-        //init model loading on first model
-        model[0] = getModel(0, "car.apw", Model.MODELW);
-        model[0].translate(new Vec(0, -2, -15));
+        try {
+            //init model loading on first model
+            model[0] = readObjModelW(new File("res/teapot.obj"));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(LWJGL_Test.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        model[0].translate(new Vec(0, 0, -20));
         model[0].displayData(ModelW.DISP_APW);
+        openglInit();
     }
     public ModelW readObjModelW(File objFile) throws FileNotFoundException{
         Point[] p = new Point[0];
