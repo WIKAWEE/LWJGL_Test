@@ -84,6 +84,7 @@ public class LWJGL_Test {
             System.out.println("vertex SHADER FAILURE");
             System.exit(0);
         }
+        glAttachShader(pid, vid);
         String fsCode = "";
         try {fsCode = new String(Files.readAllBytes(Paths.get("res/fragment.fs")));
         }catch(Exception ex){error(ex.getMessage());}
@@ -97,7 +98,6 @@ public class LWJGL_Test {
             System.out.println("FRAGMENT SHADER FAILURE");
             System.exit(0);
         }
-        glAttachShader(pid, vid);
         glAttachShader(pid, fid);
         glLinkProgram(pid);
         if(glGetProgrami(pid, GL_LINK_STATUS) == 0){
@@ -107,9 +107,9 @@ public class LWJGL_Test {
         if(glGetProgrami(pid, GL_VALIDATE_STATUS) == 0){
             System.out.println("WARNING: INVALIDATED PGM");
         }
-        glDetachShader(pid, vid);
-        glDetachShader(pid, fid);
-        int vboLength = 0;
+        glDeleteShader(vid);
+        glDeleteShader(fid);
+        /*int vboLength = 0;
         for(Model m: model)
             vboLength += m.point.length*3;
         vertexBuffer = MemoryUtil.memAllocFloat(vboLength);
@@ -119,7 +119,19 @@ public class LWJGL_Test {
                 vertexBuffer.put(p.getY());
                 vertexBuffer.put(p.getZ());
             }
-        }
+        }*/
+        vertexBuffer = MemoryUtil.memAllocFloat(9);
+        vertexBuffer.put(1);
+        vertexBuffer.put(-1);
+        vertexBuffer.put(0);
+        
+        vertexBuffer.put(-1);
+        vertexBuffer.put(-1);
+        vertexBuffer.put(0);
+        
+        vertexBuffer.put(0);
+        vertexBuffer.put(1);
+        vertexBuffer.put(0);
         vertexBuffer.flip();
         while(vertexBuffer.hasRemaining()){
             System.out.println("    "+vertexBuffer.get());
@@ -145,8 +157,12 @@ public class LWJGL_Test {
         glUseProgram(pid);
         glBindVertexArray(vao);
         glEnableVertexAttribArray(0);
+        System.out.println("ERROR 0 "+glGetError());
         
         glDrawArrays(GL_TRIANGLES, 0, 3);
+        System.out.println("ERROR 1 "+glGetError());
+        
+        //System.out.println(glGetError());
         
         glDisableVertexAttribArray(0);
         glBindVertexArray(0);
