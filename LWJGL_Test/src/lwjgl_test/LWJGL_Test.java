@@ -18,10 +18,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
-import static org.lwjgl.opengl.ARBVertexArrayObject.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
@@ -61,8 +59,10 @@ public class LWJGL_Test {
     private void openglInit(){
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
+        glEnableClientState(GL_VERTEX_ARRAY);
         glViewport(0, 0, windowWidth, windowHeight);
         glfwSwapInterval(1);
+        glDisable(GL_CULL_FACE);
         pScalarW = 1/(float)Math.tan(fieldOfView/2);
         pScalarH = 21*pScalarW/9;
         System.out.println("Running openGL version "+glGetString(GL_VERSION));
@@ -121,11 +121,11 @@ public class LWJGL_Test {
             }
         }*/
         vertexBuffer = MemoryUtil.memAllocFloat(9);
-        vertexBuffer.put(1);
+        vertexBuffer.put(-1);
         vertexBuffer.put(-1);
         vertexBuffer.put(0);
         
-        vertexBuffer.put(-1);
+        vertexBuffer.put(1);
         vertexBuffer.put(-1);
         vertexBuffer.put(0);
         
@@ -141,6 +141,7 @@ public class LWJGL_Test {
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
+        System.out.println("ERROR IN INIT = "+glGetError());
         memFree(vertexBuffer);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     }
@@ -157,10 +158,10 @@ public class LWJGL_Test {
         glUseProgram(pid);
         glBindVertexArray(vao);
         glEnableVertexAttribArray(0);
-        System.out.println("ERROR 0 "+glGetError());
+        System.out.println("ERROR 0 = "+glGetError());
         
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        System.out.println("ERROR 1 "+glGetError());
+        System.out.println("ERROR 1 = "+glGetError());
         
         //System.out.println(glGetError());
         
@@ -202,7 +203,6 @@ public class LWJGL_Test {
             Logger.getLogger(LWJGL_Test.class.getName()).log(Level.SEVERE, null, ex);
         }
         model[0].translate(new Vec(0, 0, -20));
-        model[0].displayData(ModelW.DISP_APW);
         openglInit();
     }
     public ModelW readObjModelW(File objFile) throws FileNotFoundException{
@@ -344,4 +344,5 @@ public class LWJGL_Test {
             screenRunning = false;
             System.out.println("EXIT");
     }
+
 }
