@@ -19,6 +19,7 @@ import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL46.*;
+import static org.lwjgl.opengl.GL46.glBufferData;
 import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
@@ -80,7 +81,7 @@ public class LWJGL_Test {
         vid = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vid, vsCode);
         glCompileShader(vid);
-        if(glGetShaderi(vid, GL_COMPILE_STATUS) == 0){
+        if(glGetShaderi(vid, GL_COMPILE_STATUS) == GL_FALSE){
             System.out.println("vertex SHADER FAILURE");
             System.exit(0);
         }
@@ -94,21 +95,19 @@ public class LWJGL_Test {
         fid = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fid, fsCode);
         glCompileShader(fid);
-        if(glGetShaderi(fid, GL_COMPILE_STATUS) == 0){
+        if(glGetShaderi(fid, GL_COMPILE_STATUS) == GL_FALSE){
             System.out.println("FRAGMENT SHADER FAILURE");
             System.exit(0);
         }
         glAttachShader(pid, fid);
         glLinkProgram(pid);
-        if(glGetProgrami(pid, GL_LINK_STATUS) == 0){
+        if(glGetProgrami(pid, GL_LINK_STATUS) == GL_FALSE){
             error("failed to link program");
         }
         glValidateProgram(pid);
-        if(glGetProgrami(pid, GL_VALIDATE_STATUS) == 0){
+        if(glGetProgrami(pid, GL_VALIDATE_STATUS) == GL_FALSE){
             System.out.println("WARNING: INVALIDATED PGM");
         }
-        glDeleteShader(vid);
-        glDeleteShader(fid);
         /*int vboLength = 0;
         for(Model m: model)
             vboLength += m.point.length*3;
@@ -120,18 +119,31 @@ public class LWJGL_Test {
                 vertexBuffer.put(p.getZ());
             }
         }*/
-        vertexBuffer = MemoryUtil.memAllocFloat(9);
-        vertexBuffer.put(-1);
-        vertexBuffer.put(-1);
+        vertexBuffer = MemoryUtil.memAllocFloat(18);
+        vertexBuffer.put(-0.5f);
+        vertexBuffer.put(0.5f);
         vertexBuffer.put(0);
         
-        vertexBuffer.put(1);
-        vertexBuffer.put(-1);
+        vertexBuffer.put(-0.5f);
+        vertexBuffer.put(-0.5f);
         vertexBuffer.put(0);
         
+        vertexBuffer.put(0.5f);
+        vertexBuffer.put(-0.5f);
         vertexBuffer.put(0);
-        vertexBuffer.put(1);
+        
+        vertexBuffer.put(-0.5f);
+        vertexBuffer.put(0.5f);
         vertexBuffer.put(0);
+        
+        vertexBuffer.put(0.5f);
+        vertexBuffer.put(0.5f);
+        vertexBuffer.put(0);
+        
+        vertexBuffer.put(0.5f);
+        vertexBuffer.put(-0.5f);
+        vertexBuffer.put(0);
+        
         vertexBuffer.flip();
         while(vertexBuffer.hasRemaining()){
             System.out.println("    "+vertexBuffer.get());
@@ -141,8 +153,10 @@ public class LWJGL_Test {
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
         System.out.println("ERROR IN INIT = "+glGetError());
         memFree(vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     }
     private void error(String m){
@@ -159,6 +173,14 @@ public class LWJGL_Test {
         glBindVertexArray(vao);
         glEnableVertexAttribArray(0);
         System.out.println("ERROR 0 = "+glGetError());
+        
+        /*
+        glBegin(GL_TRIANGLES);
+        glVertex3f(-1f, 1f, 0f);
+        glVertex3f(-1f, -1f, 0f);
+        glVertex3f(1f, -1f, 0f);
+        glEnd();
+        */
         
         glDrawArrays(GL_TRIANGLES, 0, 3);
         System.out.println("ERROR 1 = "+glGetError());
