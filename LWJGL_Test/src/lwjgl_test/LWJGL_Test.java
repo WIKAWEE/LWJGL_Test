@@ -8,23 +8,21 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lwjgl_test.Exception.WrongLengthException;
 import lwjgl_test.Exception.WrongTypeException;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWWindowCloseCallback;
-import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
+import org.lwjgl.opengl.GL;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL46.*;
-import static org.lwjgl.opengl.GL46.glBufferData;
-import static org.lwjgl.glfw.GLFW.glfwGetProcAddress;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
 public class LWJGL_Test {
+    Random rand = new Random();
+    int colorLocation = 0;
     int frameCount;
     static int vao;
     static FloatBuffer vertexBuffer;
@@ -107,8 +105,8 @@ public class LWJGL_Test {
         glValidateProgram(pid);
         if(glGetProgrami(pid, GL_VALIDATE_STATUS) == GL_FALSE){
             System.out.println("WARNING: INVALIDATED PGM");
-        }
-        /*int vboLength = 0;
+        }/*
+        int vboLength = 0;
         for(Model m: model)
             vboLength += m.point.length*3;
         vertexBuffer = MemoryUtil.memAllocFloat(vboLength);
@@ -119,45 +117,49 @@ public class LWJGL_Test {
                 vertexBuffer.put(p.getZ());
             }
         }*/
+        
         vertexBuffer = MemoryUtil.memAllocFloat(18);
-        vertexBuffer.put(-0.5f);
+        vertexBuffer.put(-0.6f);
         vertexBuffer.put(0.5f);
         vertexBuffer.put(0);
         
-        vertexBuffer.put(-0.5f);
-        vertexBuffer.put(-0.5f);
-        vertexBuffer.put(0);
-        
-        vertexBuffer.put(0.5f);
+        vertexBuffer.put(-0.6f);
         vertexBuffer.put(-0.5f);
         vertexBuffer.put(0);
         
+        vertexBuffer.put(0.4f);
         vertexBuffer.put(-0.5f);
+        vertexBuffer.put(0);
+        
+        vertexBuffer.put(-0.4f);
         vertexBuffer.put(0.5f);
         vertexBuffer.put(0);
         
-        vertexBuffer.put(0.5f);
+        vertexBuffer.put(0.6f);
         vertexBuffer.put(0.5f);
         vertexBuffer.put(0);
         
-        vertexBuffer.put(0.5f);
+        vertexBuffer.put(0.6f);
         vertexBuffer.put(-0.5f);
         vertexBuffer.put(0);
+        
         
         vertexBuffer.flip();
-        while(vertexBuffer.hasRemaining()){
-            System.out.println("    "+vertexBuffer.get());
-        }
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(0);
-        System.out.println("ERROR IN INIT = "+glGetError());
-        memFree(vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        vao = glGenVertexArrays();
+        glBindVertexArray(vao);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(0);
+        while(vertexBuffer.hasRemaining()){
+            System.out.println("    "+vertexBuffer.get());
+        }
+        memFree(vertexBuffer);
+        glUseProgram(pid);
+        colorLocation = glGetUniformLocation(pid, "baseColor");
+        glUniform3f(colorLocation, 1.0f, 1.0f, 1.0f);
+        System.out.println("ERROR IN INIT = "+glGetError());
     }
     private void error(String m){
         System.out.println(m);
@@ -173,16 +175,19 @@ public class LWJGL_Test {
         glBindVertexArray(vao);
         glEnableVertexAttribArray(0);
         System.out.println("ERROR 0 = "+glGetError());
+        glUniform3f(colorLocation, (float)(Math.sin(frameStart)+1)/2, (float)(Math.cos(frameStart/3.2)+1)/2, (float)(Math.cos(0.95243*frameStart)+1)/2);
+        //glUniform3f(colorLocation, 1-rand.nextFloat()/20, 1-rand.nextFloat()/20, 1-rand.nextFloat()/20);
+        
         
         /*
         glBegin(GL_TRIANGLES);
-        glVertex3f(-1f, 1f, 0f);
-        glVertex3f(-1f, -1f, 0f);
-        glVertex3f(1f, -1f, 0f);
+        glVertex3f(-0.5f, -0.5f, 0f);
+        glVertex3f(0.5f, -0.5f, 0f);
+        glVertex3f(0f, 0.5f, 0f);
         glEnd();
         */
         
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         System.out.println("ERROR 1 = "+glGetError());
         
         //System.out.println(glGetError());
