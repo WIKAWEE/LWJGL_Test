@@ -118,10 +118,10 @@ public class LWJGL_Test {
             }
         }*/
         
-        vertexBuffer = MemoryUtil.memAllocFloat(18);
+        vertexBuffer = MemoryUtil.memAllocFloat(27);
         vertexBuffer.put(-0.6f);
         vertexBuffer.put(0.5f);
-        vertexBuffer.put(0);
+        vertexBuffer.put(-1);
         
         vertexBuffer.put(-0.6f);
         vertexBuffer.put(-0.5f);
@@ -141,7 +141,19 @@ public class LWJGL_Test {
         
         vertexBuffer.put(0.6f);
         vertexBuffer.put(-0.5f);
+        vertexBuffer.put(-1);
+        
+        vertexBuffer.put(-0.25f);
+        vertexBuffer.put(0.55f);
         vertexBuffer.put(0);
+        
+        vertexBuffer.put(0.25f);
+        vertexBuffer.put(0.55f);
+        vertexBuffer.put(0);
+        
+        vertexBuffer.put(0f);
+        vertexBuffer.put(0.75f);
+        vertexBuffer.put(1);
         
         
         vertexBuffer.flip();
@@ -187,7 +199,7 @@ public class LWJGL_Test {
         glEnd();
         */
         
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 9);
         System.out.println("ERROR 1 = "+glGetError());
         
         //System.out.println(glGetError());
